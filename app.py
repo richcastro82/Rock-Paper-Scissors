@@ -2,28 +2,42 @@
 # DECEMBER 2021
 # ROCK-PAPER-SCISSOR GAME GRAPHICAL INTERFACE VERSION
 
-import pygame, sys, random
+import os, pygame, sys, random
 from random import randint
+
 pygame.init()
-
-fps=30
-Win_Width=1200
-Win_Height=800
-Win_Size=(Win_Width, Win_Height)
 clock=pygame.time.Clock()
-screen=pygame.display.set_mode(Win_Size)
-scoreFont=pygame.font.SysFont('ComicSans', 60)
-bg=pygame.image.load('assets/bg.png')
-RockUser=pygame.image.load('assets/Rock.png')
-PaperUser=pygame.image.load('assets/Paper.png')
-StartIcon=pygame.image.load('assets/unknown.png')
-ScissorsUser=pygame.image.load('assets/Scissors.png')
-Rock=pygame.transform.scale(pygame.image.load('assets/Rock.png'),[100,100])
-Paper=pygame.transform.scale(pygame.image.load('assets/Paper.png'),[100,100])
-Scissors=pygame.transform.scale(pygame.image.load('assets/Scissors.png'),[100,100])
-RestartIcon=pygame.transform.scale(pygame.image.load('assets/restart.png'),[75,75])
-Choices=[RockUser, PaperUser, ScissorsUser]
+fps=30
 
+current_path = os.path.dirname(__file__)
+bg=pygame.image.load(current_path+'/assets/bg.png')
+RockUser=pygame.image.load(current_path+'/assets/Rock.png')
+PaperUser=pygame.image.load(current_path+'/assets/Paper.png')
+StartIcon=pygame.image.load(current_path+'/assets/unknown.png')
+ScissorsUser=pygame.image.load(current_path+'/assets/Scissors.png')
+Rock=pygame.transform.scale(pygame.image.load(current_path+'/assets/Rock.png'),[100,100])
+Paper=pygame.transform.scale(pygame.image.load(current_path+'/assets/Paper.png'),[100,100])
+Scissors=pygame.transform.scale(pygame.image.load(current_path+'/assets/Scissors.png'),[100,100])
+RestartIcon=pygame.transform.scale(pygame.image.load(current_path+'/assets/restart.png'),[75,75])
+
+
+# 2025 UPDATE - DETECT IF RUNNING GAME ON THE HACKBERRY SO WE CAN
+# ADJUST THE SETTINGS AUTOMATICALLY
+Screen_Detect=pygame.display.Info()
+Hackberry = True
+if Screen_Detect.current_w == 720:
+    Hackberry = True
+    from hackberryassets import *
+    Win_Width=Screen_Detect.current_w
+    Win_Height=Screen_Detect.current_h
+else:
+    Win_Width=1200
+    Win_Height=800
+Win_Size=(Win_Width, Win_Height)
+screen=pygame.display.set_mode(Win_Size)
+
+scoreFont=pygame.font.SysFont('ComicSans', 60)
+Choices=[RockUser, PaperUser, ScissorsUser]
 
 class GamePanel:
     def __init__(self, x, y, image):
@@ -40,6 +54,7 @@ class GamePanel:
             if pos[1]>self.y and pos[1]<self.y+self.height:
                 return True
         return False
+
 
 class Player:
     def __init__(self, x, y):
@@ -59,7 +74,6 @@ class Player:
         scoreDisplay=scoreFont.render(scoreText, True, (200,40,40))
         scoreRect=scoreDisplay.get_rect(center=(self.d, self.f))
         screen.blit(scoreDisplay, scoreRect)
-
 
 
 class Game:
@@ -102,6 +116,7 @@ class Game:
 
 
 
+
 def main():
     userIn=StartIcon
     compIn=StartIcon
@@ -114,8 +129,14 @@ def main():
         RUNTIME.DrawBaseElements()
         RUNTIME.P1.draw(userIn)
         RUNTIME.P2.draw(compIn)
-        RUNTIME.P1.CountScore(480,400)
-        RUNTIME.P2.CountScore(700,400)
+        # 2025 UPDATE TO PROPERLY DISPLAY THE SCORE ON THE HACKBERRY SCREEN SIZE 
+        if Hackberry == True:
+            RUNTIME.P1.CountScore(310,360)
+            RUNTIME.P2.CountScore(420,360)
+        else:
+            RUNTIME.P1.CountScore(480,400)
+            RUNTIME.P2.CountScore(700,400)
+
         for event in pygame.event.get():
             pos=pygame.mouse.get_pos()
             if event.type==pygame.QUIT:
